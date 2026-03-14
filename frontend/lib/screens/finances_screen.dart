@@ -264,7 +264,8 @@ class _FinancesScreenState extends State<FinancesScreen> {
             children: [
               Icon(Icons.receipt_long, color: Colors.deepOrange),
               SizedBox(width: 8),
-              Text('Record Payment'),
+              Text('Record Payment',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           content: SingleChildScrollView(
@@ -272,42 +273,110 @@ class _FinancesScreenState extends State<FinancesScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Summary box
+                // Summary box - fully dark theme
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: Colors.deepOrange.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.deepOrange.shade200),
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: Colors.deepOrange.shade700, width: 1.5),
                   ),
                   child: Column(
                     children: [
-                      _summaryRow('Total Earned',
-                          '₹${_rupeeFormat.format(_totalEarned)}', Colors.blue),
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.account_balance_wallet,
+                              color: Colors.deepOrange, size: 16),
+                          SizedBox(width: 6),
+                          Text('Payment Summary',
+                              style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                  letterSpacing: 0.5)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      _summaryRow(
+                          'Total Earned',
+                          '₹${_rupeeFormat.format(_totalEarned)}',
+                          Colors.lightBlueAccent),
+                      const SizedBox(height: 6),
                       _summaryRow(
                           'Advance Given',
                           '- ₹${_rupeeFormat.format(_totalAdvance)}',
-                          Colors.red),
+                          Colors.redAccent),
+                      const SizedBox(height: 6),
                       _summaryRow(
                           'Already Paid',
                           '- ₹${_rupeeFormat.format(_totalPaid)}',
-                          Colors.green),
-                      const Divider(),
-                      _summaryRow(
-                        'Remaining Due',
-                        '₹${_rupeeFormat.format(_remainingBalance)}',
-                        _remainingBalance > 0
-                            ? Colors.deepOrange
-                            : Colors.green,
-                        bold: true,
+                          Colors.greenAccent),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 1,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Colors.deepOrange,
+                              Colors.transparent
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Remaining Due',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14)),
+                          Text(
+                            '₹${_rupeeFormat.format(_remainingBalance)}',
+                            style: TextStyle(
+                              color: _remainingBalance > 0
+                                  ? Colors.orangeAccent
+                                  : Colors.greenAccent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  '⚠️ Payment is made externally (UPI/Cash). Record here only.',
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                const SizedBox(height: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border:
+                        Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline,
+                          size: 13, color: Colors.orange),
+                      const SizedBox(width: 6),
+                      const Expanded(
+                        child: Text(
+                          'Pay externally (UPI/Cash), record here only.',
+                          style: TextStyle(fontSize: 11, color: Colors.orange),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
@@ -428,12 +497,13 @@ class _FinancesScreenState extends State<FinancesScreen> {
           Text(label,
               style: TextStyle(
                   fontSize: 13,
+                  color: Colors.white,
                   fontWeight: bold ? FontWeight.bold : FontWeight.normal)),
           Text(value,
               style: TextStyle(
                   color: color,
                   fontWeight: FontWeight.bold,
-                  fontSize: bold ? 15 : 13)),
+                  fontSize: bold ? 16 : 13)),
         ],
       ),
     );
