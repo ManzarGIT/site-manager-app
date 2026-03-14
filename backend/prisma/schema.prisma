@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:Samir583%40@localhost:5432/construction_app?schema=public"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password_hash String
+  role          String   @default("MANAGER") // ADMIN, MANAGER, HANDLER, ACCOUNTANT
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  managedSites  Site[]   @relation("ManagerSites")
+}
+
+model Site {
+  id          String       @id @default(uuid())
+  name        String
+  location    String?
+  managerId   String
+  manager     User         @relation("ManagerSites", fields: [managerId], references: [id])
+  workers     Worker[]
+  attendances Attendance[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Worker {
+  id           String        @id @default(uuid())
+  name         String
+  phone        String?
+  qrCode       String        @unique @default(uuid())
+  siteId       String
+  site         Site          @relation(fields: [siteId], references: [id])
+  attendances  Attendance[]
+  transactions Transaction[]
+  workProgress WorkProgress[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  isActive     Boolean       @default(true)
+
+  // Payment Type: DAILY_WAGE | CONTRACT | PIECE_RATE
+  paymentType          String  @default("DAILY_WAGE")
+
+  // DAILY_WAGE
+  wageRate             Float   @default(0)
+
+  // CONTRACT
+  contractDescription  String?
+  contractAmount       Float?
+
+  // PIECE_RATE
+  taskDescription      String?
+  unitDescription      String?
+  ratePerUnit          Float?
+}
+
+model Attendance {
+  id          String    @id @default(uuid())
+  workerId    String
+  worker      Worker    @relation(fields: [workerId], references: [id])
+  siteId      String
+  site        Site      @relation(fields: [siteId], references: [id])
+  date        DateTime  @default(now())
+  checkIn     DateTime?
+  checkOut    DateTime?
+  status      String    @default("PRESENT") // PRESENT, ABSENT, HALF_DAY
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Transaction {
+  id             String   @id @default(uuid())
+  workerId       String
+  worker         Worker   @relation(fields: [workerId], references: [id])
+  amount         Float
+  type           String   // ADVANCE, WAGE, PAYMENT
+  date           DateTime @default(now())
+  encryptedNotes String?
+  createdBy      String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model WorkProgress {
+  id          String   @id @default(uuid())
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id])
+  quantity    Float
+  description String?
+  recordedBy  String
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
